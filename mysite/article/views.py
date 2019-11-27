@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .forms import ArticleColumnForm
+from .forms import ArticleColumnForm, ArticlePostForm
 from .models import ArticleColumn
 
 
@@ -58,3 +58,33 @@ def del_article_column(request):
         return HttpResponse('1')
     except:
         return HttpResponse('2')
+
+
+@login_required(login_url='/account/login/')
+@csrf_exempt
+def article_post(request):
+    if request.method == 'POST':
+        # article_post_form = ArticlePostForm(data=request.POST)
+        # 团子注：应该可以不用关键字参数
+        article_post_form = ArticlePostForm(request.POST)
+        if article_post_form.is_valid():
+            cd = article_post_form.cleaned_data
+            try:
+                new_article = article_post_form.save(commit=False)
+                new_article.author = request.user
+                new_article.column = request.user.article_column.get(
+                    id=request.POST['column_id']
+                )
+                new_article.save()
+                return HttpResponse('1')
+            except:
+                return HttpResponse('2')
+        else:
+            return HttpResponse('3')
+    else:
+        article_post_form = ArticlePostForm()
+        article_columns = request.user.article_column.all()
+        return render(request, 'article/column/article_post.html', {
+            'article_post_form': article_post_form,
+            'article_columns': article_columns
+        })
