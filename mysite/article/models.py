@@ -27,7 +27,8 @@ class ArticlePost(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ('title', )
+        # ordering = ('title', )
+        ordering = ('-updated', )
         index_together = (('id', 'slug'), )
 
     def __str__(self):
