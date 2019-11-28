@@ -1,0 +1,90 @@
+{% extends "article/base.html" %}
+
+{% load static %}
+
+{% block title %}
+article column
+{% endblock title %}
+
+{% block content %}
+  <link rel="stylesheet" href="{% static 'editor/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'editor/css/editormd.css' %}">
+  <div class="container">
+    <div class="col-md-10">
+      <div style="margin-left: 10px;">
+        <form action="." class="form-horizontal" method="post">
+          {% csrf_token %}
+          <div class="row" style="margin-top: 10px;">
+            <div class="col-md-2 text-right"><span>标题：</span></div>
+            <div class="col-md-10 text-left">{{ this_article_form.title }}</div>
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <div class="col-md-2 text-right"><span>栏目：</span></div>
+            <div class="col-md-10 text-left">
+              <select id="which_column">
+                {% for column in article_columns %}
+                  {% if column == this_article_column.column %}
+                    <option value="{{ column.id }}" selected="selected">
+                      {{ column.column }}
+                    </option>
+                  {% else %}
+                    <option value="{{ column.id }}">
+                      {{ column.column }}
+                    </option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <div class="col-md-2 text-right"><span>内容：</span></div>
+            <div id="editormd" class="col-md-10 text-left">
+              <!-- {{ article_post_form.body }} -->
+              <textarea style="display:none;" id="id_body">
+                {{ article.body }}
+              </textarea>
+            </div>
+          </div>
+          <div class="row">
+            <input type="button" value="发布" class="btn btn-primary btn-lg" onclick="redit_article()">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static 'js/jquery.js' %}"></script>
+  <script src="{% static 'editor/editormd.min.js' %}"></script>
+  <script src="{% static 'js/layer.js' %}"></script>
+  <script>
+    $(function() {
+      var editor = editormd('editormd', {
+        width: '100%',
+        height: 640,
+        // syncScrolling: 'single',
+        path: '{% static "editor/lib/" %}',
+      })
+    })
+
+    function redit_article() {
+      var title = $('#id_title').val()
+      var column_id = $('#which_column').val()
+      var body = $('#id_body').val()
+      $.ajax({
+        url: '{% url "article:redit_article" article.id %}',
+        type: 'POST',
+        data: {
+          title, body, column_id,
+        },
+        success: function(e) {
+          if (e === '1') {
+            layer.msg('successful')
+            location.href = '{% url "article:article_list" %}'
+          } else {
+            layer.msg('sorry.')
+          }
+        }
+      })
+    }
+  </script>
+{% endblock content %}

@@ -23,7 +23,9 @@ articles list
       </td>
       <td>{{ article.column }}</td>
       <td>
-        <span class="glyphicon glyphicon-pencil"></span>
+        <a href="{% url 'article:redit_article' article.id %}" name="edit">
+          <span class="glyphicon glyphicon-pencil"></span>
+        </a>
         <a href="javascript:;" name="delete" onclick="del_article(this, {{ article.id }})">
           <span class="glyphicon glyphicon-trash" style="margin-left: 20px;"></span>
         </a>
