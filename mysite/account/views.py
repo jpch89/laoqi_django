@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
 from .forms import (LoginForm, RegistrationForm, UserForm, UserInfoForm,
                     UserProfileForm)
@@ -34,17 +35,14 @@ def register(request):
         user_form = RegistrationForm(request.POST)
         userprofile_form = UserProfileForm(request.POST)
         if user_form.is_valid() * userprofile_form.is_valid():
-            # 团子注：疑问，这里是否是多余的？
-            # 不是多余的，可以防止二次保存
             new_user = user_form.save(commit=False)
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.save()
-            # 团子注：疑问，这里是否是多余的？
-            # 不是多余的，可以防止二次保存
             new_profile = userprofile_form.save(commit=False)
             new_profile.user = new_user
             new_profile.save()
-            return HttpResponse('successfully')
+            # return HttpResponse('successfully')
+            return HttpResponseRedirect(reverse('account:user_login'))
         else:
             return HttpResponse('Sorry, you can not register.')
     else:
