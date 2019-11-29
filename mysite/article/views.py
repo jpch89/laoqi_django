@@ -139,10 +139,6 @@ def redit_article(request, article_id):
         # 我试试我的方法，分两步走，能不能行。结果：不行！！！
         # this_article_form = ArticlePostForm()
         # this_article_form.title = article.title
-        print('=' * 30)
-        print(this_article_form.fields)
-        print(dir(this_article_form))
-        print('=' * 30)
         this_article_column = article.column
         return render(request, 'article/column/redit_article.html', {
             'article': article,
