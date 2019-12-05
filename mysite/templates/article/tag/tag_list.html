@@ -1,0 +1,69 @@
+{% extends "article/base.html" %}
+
+{% load static %}
+
+{% block title %}
+articles tag
+{% endblock title %}
+
+{% block content %}
+<div>
+  <p>添加文章标签</p>
+  <form action="." method="post" class="form-horizontal">
+    {% csrf_token %}
+    <div class="row" style="margin-top: 10px;">
+      <div class="col-md-2 text-right"><span>文章标签</span></div>
+      <div class="col-md-10 text-left">{{ article_tag_form.tag }}</div>
+    </div>
+    <div class="row">
+      <input type="button" value="添加"
+        class="btn btn-primary btn-lg" style="margin-left: 200px; margin-top: 10px;"
+        onclick="add_tag()">
+    </div>
+  </form>
+</div>
+<div>
+  <p>已有标签列表</p>
+  <table class="table table-hover">
+    <tr>
+      <td>序号</td>
+      <td>文章标签</td>
+      <td>操作</td>
+    </tr>
+    {% for article_tag in article_tags %}
+      <tr id={{ forloop.counter }}>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ article_tag.tag }}</td>
+        <td>
+          <a href="javascript:;" name="delete" onclick="del_tag(this, {{ article_tag.id }})">
+            <span class="glyphicon glyphicon-trash"></span>
+          </a>
+        </td>
+      </tr>
+    {% empty %}
+      <p>You have no article tags. Please add them.</p>
+    {% endfor %}
+  </table>
+</div>
+
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/layer.js' %}"></script>
+<script>
+function add_tag() {
+  tag = $('#id_tag').val()
+  $.ajax({
+    url: '{% url "article:article_tag" %}',
+    type: 'POST',
+    data: {'tag': tag},
+    success: function (e) {
+      if (e === '1') {
+        layer.msg('You have added a new tag.')
+        window.location.reload()
+      } else {
+        layer.msg(e)
+      }
+    }
+  })
+}
+</script>
+{% endblock content %}
