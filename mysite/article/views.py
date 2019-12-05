@@ -164,7 +164,7 @@ def redit_article(request, article_id):
 @csrf_exempt
 def article_tag(request):
     if request.method == 'GET':
-        article_tags = ArticlePost.objects.filter(author=request.user)
+        article_tags = ArticleTag.objects.filter(author=request.user)
         article_tag_form = ArticleTagForm()
         return render(request, 'article/tag/tag_list.html', {
             'article_tags': article_tags,
@@ -183,3 +183,16 @@ def article_tag(request):
                 return HttpResponse('the data cannot be save.')
         else:
             return HttpResponse('sorry, the form is not valid.')
+
+
+@login_required(login_url='/account/login/')
+@require_POST
+@csrf_exempt
+def del_article_tag(request):
+    tag_id = request.POST['tag_id']
+    try:
+        tag = ArticleTag.objects.get(id=tag_id)
+        tag.delete()
+        return HttpResponse('1')
+    except:
+        return HttpResponse('2')
