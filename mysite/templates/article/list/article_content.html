@@ -24,6 +24,12 @@
           {{ total_views }}view{{ total_views | pluralize }}
         </span>
       </p>
+      <p>
+        <span style="margin-right: 10px;">
+          <strong>Tags:</strong>
+        </span>
+          {{ article.article_tag.all | join:', ' }}
+      </p>
     </header>
 
     <link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}">
@@ -47,13 +53,7 @@
     </div>
     <div>
       <p class="text-center"><strong>点赞本文的读者</strong></p>
-      {% comment %} 原书是这样写的 {% endcomment %}
       {% for user in article.users_like.all %}
-      {% comment %} 当然也可以这样写 {% endcomment %}
-      {% comment %} {% for user in users_like %} {% endcomment %}
-      {% comment %} 试试能不能这样写？ {% endcomment %}
-      {% comment %} {% for user in article.users_like %} {% endcomment %}
-      {% comment %} 答案：不行，这样会得到多对多管理器，所以会报错“多对多管理器实例不可迭代” {% endcomment %}
       <p class="text-center">{{ user.username }}</p>
       {% empty %}
       <p class="text-center">还没有人对此文章表态</p>
@@ -63,9 +63,6 @@
     <div>
       <!-- 团子注：这个 col-md-12 的 div 是我自己加的 -->
       <div class="col-md-12">
-        <!-- 团子注：哪里来的 comments -->
-        <!-- 原来是 {{ comments.count }}，经我测试不显示 -->
-        <!-- 我改成 {{ article.comments.count }} 就好了 -->
         <h3><span class="glyphicon glyphicon-bullhorn"></span>本文有 {{ article.comments.count }}评论</h3>
         {% for comment in article.comments.all %}
         <div>
@@ -129,6 +126,14 @@
         </li>
       {% endfor %}
     </ul>
+
+    <hr>
+    <p class="text-center"><h3>推荐相似文章</h3></p>
+    {% for similar in similar_articles %}
+      <p><a href="{{ similar.get_url_path }}">{{ similar.title }}</a></p>
+    {% empty %}
+      <p>Sorry, 没有相似文章</p>
+    {% endfor %}
   </div>
 </div>
 <script src="{% static 'js/jquery.js' %}"></script>
