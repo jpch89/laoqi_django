@@ -26,6 +26,18 @@ article column
       </div>
     </div>
     <div class="row" style="margin-top: 10px;">
+      <div class="col-md-2 text-right"><span>文章标签：</span></div>
+      <div class="col-md-10 text-left">
+        {% for tag in article_tags %}
+          <label class="checkbox-inline">
+            <input type="checkbox" name="article_tag" id="{{ tag.id }}" class="tagcheckbox" value="{{ tag.tag }}">{{ tag.tag }}
+          </label>
+        {% empty %}
+          <p>You have not type tags for articles. Please <a href="{% url 'article:article_tag' %}">input your tags</a></p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row" style="margin-top: 10px;">
       <div class="col-md-2 text-right"><span>内容：</span></div>
       <div id="editormd" class="col-md-10 text-left">
         <textarea id="id_body" style="display:none;"></textarea>
@@ -38,18 +50,24 @@ article column
 </div>
 <script src="{% static 'js/jquery.js' %}"></script>
 <script src="{% static 'js/layer.js' %}"></script>
+<script src="{% static 'js/json2.js' %}"></script>
 <script>
   function publish_article() {
     var title = $('#id_title').val()
     var column_id = $('#which_column').val()
     var body = $('#id_body').val()
+    var article_tags = []
+    $.each($('input[name="article_tag"]:checked'), function () {
+      article_tags.push($(this).val())
+    })
     $.ajax({
       url: '{% url "article:article_post" %}',
       type: 'POST',
       data: {
         title,
         body,
-        column_id
+        column_id,
+        'tags': JSON.stringify(article_tags),
       },
       success: function (e) {
         if (e === '1') {

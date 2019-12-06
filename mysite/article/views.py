@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
@@ -65,9 +67,7 @@ def del_article_column(request):
 @csrf_exempt
 def article_post(request):
     if request.method == 'POST':
-        # article_post_form = ArticlePostForm(data=request.POST)
-        # 团子注：应该可以不用关键字参数
-        article_post_form = ArticlePostForm(request.POST)
+        article_post_form = ArticlePostForm(data=request.POST)
         if article_post_form.is_valid():
             cd = article_post_form.cleaned_data
             try:
@@ -77,17 +77,25 @@ def article_post(request):
                     id=request.POST['column_id']
                 )
                 new_article.save()
+                tags = request.POST['tags']
+                if tags:
+                    for atag in json.loads(tags):
+                        tag = request.user.tag.get(tag=atag)
+                        new_article.article_tag.add(tag)
                 return HttpResponse('1')
-            except:
+            except Exception as e:
+                print(e)
                 return HttpResponse('2')
         else:
             return HttpResponse('3')
     else:
         article_post_form = ArticlePostForm()
         article_columns = request.user.article_column.all()
+        article_tags = request.user.tag.all()
         return render(request, 'article/column/article_post.html', {
             'article_post_form': article_post_form,
-            'article_columns': article_columns
+            'article_columns': article_columns,
+            'article_tags': article_tags
         })
 
 
