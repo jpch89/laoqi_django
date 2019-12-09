@@ -1,5 +1,6 @@
 {% extends "article/base.html" %}
 {% load static %}
+{% load thumbnail %}
 
 {% block title %}
 images
@@ -22,7 +23,9 @@ images
     <tr>
       <td>{{ forloop.counter }}</td>
       <td>{{ image.title }}</td>
-      <td>{{ image.image }}</td>
+      {% thumbnail image.image "100x100" crop="center" as im %}
+      <td><img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></td>
+      {% endthumbnail %}
       <td>
         <a href="javascript:;" onclick="del_image(this, {{ image.id }})" name="delete">
           <span class="glyphicon glyphicon-trash" style="margin-left: 20px;"></span>
@@ -95,6 +98,36 @@ images
               }
             }
           })
+        })
+      }
+    })
+  }
+
+  function del_image(the, image_id) {
+    var image_title = $(the).parents('tr').children('td').eq(1).text()
+    layer.open({
+      type: 1,
+      skin: 'layui-layer-rim',
+      area: ['400px', '200px'],
+      title: '删除图片',
+      content: '<div class="text-center" style="margin-top: 20px;">\
+                  <p>是否确定删除《' + image_title + '》</p>\
+                </div>',
+      btn: ['确定', '取消'],
+      yes: function () {
+        $.ajax({
+          url: '{% url "image:del_image" %}',
+          type: 'POST',
+          data: {image_id},
+          success: function (e) {
+            var status = e['status']
+            if (status === '1') {
+              parent.location.reload()
+              layer.msg('has been deleted.')
+            } else {
+              layer.msg('删除失败')
+            }
+          }
         })
       }
     })

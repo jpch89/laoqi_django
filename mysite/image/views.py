@@ -29,3 +29,21 @@ def upload_image(request):
 def list_images(request):
     images = Image.objects.filter(user=request.user)
     return render(request, 'image/list_images.html', {'images': images})
+
+
+@login_required(login_url='/account/login/')
+@require_POST
+@csrf_exempt
+def del_image(request):
+    image_id = request.POST['image_id']
+    try:
+        image = Image.objects.get(id=image_id)
+        image.delete()
+        return JsonResponse({'status': '1'})
+    except:
+        return JsonResponse({'status': '2'})
+
+
+def falls_images(request):
+    images = Image.objects.all()
+    return render(request, 'image/falls_images.html', {'images': images})

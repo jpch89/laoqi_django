@@ -4,6 +4,7 @@ awesome-slugify==1.6.5
 Django==2.2.8
 isort==4.3.21
 lazy-object-proxy==1.4.3
+Markdown==3.1.1
 mccabe==0.6.1
 Pillow==6.2.1
 pycodestyle==2.5.0
@@ -12,6 +13,7 @@ pytz==2019.3
 redis==3.3.11
 regex==2019.11.1
 six==1.13.0
+sorl-thumbnail==12.5.0
 sqlparse==0.3.0
 typed-ast==1.4.0
 Unidecode==0.4.21
