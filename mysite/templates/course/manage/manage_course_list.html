@@ -7,7 +7,9 @@ manage courses
 {% block content %}
 <div>
   <div class="text-right">
-    <button type="button" class="btn btn-primary">添加课程</button>
+    <a href="{% url 'course:create_course' %}">
+      <button type="button" class="btn btn-primary">添加课程</button>
+    </a>
   </div>
   <table class="table table-hover" style="margin-top:10px">
     <tr>
