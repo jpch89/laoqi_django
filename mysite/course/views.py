@@ -1,11 +1,17 @@
+import json
+
 from braces.views import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.views.generic import ListView, TemplateView
-from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, ListView, TemplateView
 
 from .forms import CreateCourseForm
 from .models import Course
+
+# from django.views.generic.edit import CreateView
+
 
 
 class AboutView(TemplateView):
@@ -51,3 +57,16 @@ class CreateCourseView(UserCourseMixin, CreateView):
             new_course.save()
             return redirect('course:manage_course')
         return self.render_to_response({'form': form})
+
+
+class DeleteCourseView(UserCourseMixin, DeleteView):
+    # template_name = 'course/manage/delete_course_confirm.html'
+    success_url = reverse_lazy('course:manage_course')
+
+    def dispatch(self, *args, **kwargs):
+        resp = super(DeleteCourseView, self).dispatch(*args, **kwargs)
+        if self.request.is_ajax():
+            response_data = {'result': 'ok'}
+            return HttpResponse(json.dumps(response_data), content_type='application/json')
+        else:
+            return resp

@@ -1,4 +1,5 @@
 {% extends "article/base.html" %}
+{% load static %}
 
 {% block title %}
 manage courses
@@ -11,7 +12,7 @@ manage courses
       <button type="button" class="btn btn-primary">添加课程</button>
     </a>
   </div>
-  <table class="table table-hover" style="margin-top:10px">
+  <table class="table table-hover" style="margin-top: 10px;">
     <tr>
       <td>序号</td>
       <td>课程标题</td>
@@ -24,10 +25,10 @@ manage courses
       <td>{{ course.title }}</td>
       <td>{{ course.created | date:"Y-m-d" }}</td>
       <td>
-        <a href="#" name="edit">
+        <a href="javascript:;" name="edit">
           <span class="glyphicon glyphicon-pencil"></span>
         </a>
-        <a href="#" name="delete">
+        <a href="{% url 'course:delete_course' course.id %}" name="delete" class="delete">
           <span class="glyphicon glyphicon-trash" style="margin-left: 20px;"></span>
         </a>
       </td>
@@ -35,4 +36,55 @@ manage courses
     {% endfor %}
   </table>
 </div>
+
+<script src="{% static 'js/jquery.js' %}"></script>
+<script>
+  function getCookie(name) {
+    var cookieValue = null
+    if (document.cookie && document.cookie != '') {
+      var cookies = document.cookie.split(';')
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i])
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+          break
+        }
+      }
+    }
+    return cookieValue
+  }
+
+  $(document).ready(function () {
+    var csrftoken = getCookie('csrftoken')
+
+    function csrfSafeMethod(method) {
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method))
+    }
+
+    $.ajaxSetup({
+      crossDomain: false, // obviates need for sameOrigin test
+      beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+          xhr.setRequestHeader('X-CSRFToken', csrftoken)
+        }
+      }
+    })
+
+    var onDelete = function () {
+      alert('delete it?')
+      $.post(this.href, function (data) {
+        if (data.result == 'ok') {
+          window.location.reload()
+        } else {
+          alert('something wrong')
+        }
+      }).fail(function () {
+        alert('error')
+      })
+      return false
+    }
+    $('.delete').click(onDelete)
+  })
+</script>
 {% endblock content %}

@@ -1,0 +1,16 @@
+{% extends "article/base.html" %}
+
+{% block title %}
+delete course
+{% endblock title %}
+
+{% block content %}
+<div>
+  <!-- 团子注：试试 form 不加 action 属性会如何？ -->
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete "{{ object.title }}?</p>
+    <input type="submit" value="Confirm">
+  </form>
+</div>
+{% endblock content %}
