@@ -4,10 +4,9 @@ from django.urls import path
 from .views import (AboutView, CourseListView, CreateCourseView,
                     CreateLessonView, DeleteCourseView, DetailLessonView,
                     ListLessonView, ManageCourseListView,
-                    update_course_title_view)
+                    StudentListLessonView, update_course_title_view)
 
 app_name = 'course'
-
 
 urlpatterns = [
     # path('about/', TemplateView.as_view(template_name='course/about.html')),
@@ -20,4 +19,5 @@ urlpatterns = [
     path('list-lessons/<int:course_id>/', ListLessonView.as_view(), name='list_lessons'),
     path('update-course-title/', update_course_title_view, name='update_course_title'),
     path('detail-lesson/<int:lesson_id>/', DetailLessonView.as_view(), name='detail_lesson'),
+    path('lessons-list/<int:course_id>/', StudentListLessonView.as_view(), name='lessons_list'),
 ]
