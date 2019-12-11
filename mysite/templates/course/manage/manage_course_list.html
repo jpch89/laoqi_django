@@ -25,12 +25,14 @@ manage courses
       <td>{{ course.title }}</td>
       <td>{{ course.created | date:"Y-m-d" }}</td>
       <td>
-        <a href="javascript:;" name="edit">
+        <a href="javascript:;" name="edit" onclick="updateCourseTitle({{ course.id }}, '{{ course.title }}')">
           <span class="glyphicon glyphicon-pencil"></span>
         </a>
         <a href="{% url 'course:delete_course' course.id %}" name="delete" class="delete">
           <span class="glyphicon glyphicon-trash" style="margin-left: 20px;"></span>
         </a>
+        <a href="{% url 'course:list_lessons' course.id %}"><span class="glyphicon glyphicon-search"
+            style="margin-left: 20px;"></span></a>
       </td>
     </tr>
     {% endfor %}
@@ -38,6 +40,8 @@ manage courses
 </div>
 
 <script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/layer.js' %}"></script>
+<script src="{% static 'js/csrf.js' %}"></script>
 <script>
   function getCookie(name) {
     var cookieValue = null
@@ -86,5 +90,36 @@ manage courses
     }
     $('.delete').click(onDelete)
   })
+
+  function updateCourseTitle(courseID, courseTitle) {
+    layer.open({
+      type: 1,
+      skin: 'layui-layer-rim',
+      area: ['400px', '200px'],
+      title: '修改课程标题',
+      content: '<div class="text-center" style="margin-top: 10px;">\
+                  <p>请输入新课程名：</p>\
+                  <input id="new_course_title" type="text" value="' + courseTitle + '" />\
+                </div>',
+      btn: ['确定', '取消'],
+      yes: function () {
+        var newCourseTitle = $('#new_course_title').val()
+        $.ajax({
+          url: '{% url "course:update_course_title" %}',
+          type: 'POST',
+          data: {
+            'course_id': courseID,
+            'course_title': newCourseTitle
+          },
+          success: function (e) {
+            if (e['status'] === '1') {
+              parent.location.reload()
+              layer.msg('课程标题名已更新。')
+            }
+          }
+        })
+      }
+    })
+  }
 </script>
 {% endblock content %}
